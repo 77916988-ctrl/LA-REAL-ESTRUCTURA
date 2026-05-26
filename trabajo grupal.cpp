@@ -106,6 +106,25 @@ void eliminarAlumno(NodoLista*& lista, int id) {
     cout << "Alumno no encontrado.\n";
 }
 
+void encolarReclamo(NodoCola*& frente, NodoCola*& final, Alumno a) {
+    NodoCola* nuevo = new NodoCola();
+    nuevo->info = a;
+    nuevo->siguiente = NULL;
+    if (frente == NULL) frente = nuevo;
+    else final->siguiente = nuevo;
+    final = nuevo;
+    cout << "-> Alumno " << a.nombre << " en fila de atencion.\n";
+}
+
+void atenderReclamo(NodoCola*& frente, NodoCola*& final) {
+    if (frente == NULL) { cout << "No hay reclamos pendientes.\n"; return; }
+    NodoCola* aux = frente;
+    cout << "ATENDIENDO A: " << aux->info.nombre << " (ID: " << aux->info.id << ")\n";
+    frente = frente->siguiente;
+    delete aux;
+    if (frente == NULL) final = NULL;
+}
+
 int main() {
     return 0;
 }
