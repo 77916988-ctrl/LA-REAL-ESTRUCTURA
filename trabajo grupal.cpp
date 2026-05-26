@@ -61,6 +61,51 @@ void ordenarPorPromedio(NodoLista*& lista) {
     cout << "-> Lista ordenada por promedio (Mayor a menor).\n";
 }
 
+void buscarAlumno(NodoLista* lista, int idB) {
+    NodoLista* temp = lista;
+    while (temp != NULL) {
+        if (temp->info.id == idB) {
+            cout << "ENCONTRADO: " << temp->info.nombre << " | Promedio: " << temp->info.promedio << endl;
+            return;
+        }
+        temp = temp->siguiente;
+    }
+    cout << "Alumno no encontrado.\n";
+}
+
+void modificarNotas(NodoLista* lista, int id) {
+    NodoLista* temp = lista;
+    while (temp != NULL) {
+        if (temp->info.id == id) {
+            cout << "Nuevas notas (C1 EP C2 EF): ";
+            cin >> temp->info.c1 >> temp->info.ep >> temp->info.c2 >> temp->info.ef;
+            temp->info.promedio = calcularPromedio(temp->info.c1, temp->info.ep, temp->info.c2, temp->info.ef);
+            temp->info.estado = (temp->info.promedio >= 11) ? "Aprobado" : "Desaprobado";
+            cout << "Notas actualizadas. Promedio: " << temp->info.promedio << endl;
+            return;
+        }
+        temp = temp->siguiente;
+    }
+    cout << "Alumno no encontrado.\n";
+}
+
+void eliminarAlumno(NodoLista*& lista, int id) {
+    NodoLista* temp = lista;
+    NodoLista* ant = NULL;
+    while (temp != NULL) {
+        if (temp->info.id == id) {
+            if (ant == NULL) lista = temp->siguiente;
+            else ant->siguiente = temp->siguiente;
+            cout << "Alumno eliminado.\n";
+            delete temp;
+            return;
+        }
+        ant = temp;
+        temp = temp->siguiente;
+    }
+    cout << "Alumno no encontrado.\n";
+}
+
 int main() {
     return 0;
 }
