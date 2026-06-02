@@ -1,3 +1,8 @@
+/*
+INTEGRANTES:
+-Quispe Huaman Frank Axel
+-
+*/
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -128,7 +133,62 @@ void atenderReclamo(NodoCola*& frente, NodoCola*& final) {
     delete aux;
     if (frente == NULL) final = NULL;
 }
+void registrarCambio(NodoPila*& cima, string msg) {
+    NodoPila* nuevo = new NodoPila();
+    nuevo->accion = msg;
+    nuevo->siguiente = cima;
+    cima = nuevo;
+}
+
+void verUltimoCambio(NodoPila* cima) {
+    if (cima == NULL) cout << "Sin historial de cambios.\n";
+    else cout << "ULTIMA ACCION: " << cima->accion << endl;
+}
+
+void desapilarCambio(NodoPila*& cima) {
+    if (cima == NULL) { cout << "Historial vacio.\n"; return; }
+    cout << "Eliminado: " << cima->accion << endl;
+    NodoPila* aux = cima;
+    cima = cima->siguiente;
+    delete aux;
+}
+
+void guardarDatos(NodoLista* lista) {
+    ofstream archivo("notas_alumnos.txt");
+    NodoLista* temp = lista;
+    while (temp != NULL) {
+        archivo << temp->info.id << " " << temp->info.c1 << " " << temp->info.ep << " "
+                << temp->info.c2 << " " << temp->info.ef << " " << temp->info.nombre << endl;
+        temp = temp->siguiente;
+    }
+    archivo.close();
+    cout << "-> Datos guardados en notas_alumnos.txt\n";
+}
+
+void cargarDatos(NodoLista*& lista) {
+    ifstream archivo("notas_alumnos.txt");
+    if (!archivo) { cout << "No se encontro el archivo.\n"; return; }
+    int id;
+    float n1, n2, n3, n4;
+    string nom;
+    int n = 0;
+    while (archivo >> id >> n1 >> n2 >> n3 >> n4 >> nom) {
+        registrarAlumno(lista, id, nom, n1, n2, n3, n4);
+        n++;
+    }
+    archivo.close();
+    cout << "-> Se cargaron " << n << " alumno(s).\n";
+}
 
 int main() {
+    NodoLista* registro = NULL;
+    NodoCola *frenteR = NULL, *finalR = NULL;
+    NodoPila* historial = NULL;
+    int op, id, sub;
+    string nom;
+    float n1, n2, n3, n4;
+    
+
+
     return 0;
 }
