@@ -1,16 +1,11 @@
-/*
-INTEGRANTES:
--Quispe Huaman Frank Axel
--
-*/
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <iomanip> //Para darle formato a los numeros decimales
+#include <iomanip>
 
 using namespace std;
 
-struct Alumno {  //implementamos la estructura principal
+struct Alumno {
     int id;
     string nombre;
     float c1, ep, c2, ef;
@@ -18,19 +13,17 @@ struct Alumno {  //implementamos la estructura principal
     string estado;
 };
 
-struct NodoLista { Alumno info; NodoLista* siguiente; };  //los nodos aqui son como ladrillos oara construir por ejemplo aqui contiene el formulario alumno y
-struct NodoCola  { Alumno info; NodoCola* siguiente; };    // NodoLista*  un puntero que apunta al siguiente ladrillo o nodo 
-struct NodoPila  { string accion; NodoPila* siguiente; };   // nodo lista imaginemos qeue es un tre con bagones Nodo cola es como la fila de un banco NodoPila como si estuviesemos poniendo platos
-//pues asi cada uno recorre como debe ya sea cola FIFO o pila LIFO 
+struct NodoLista { Alumno info; NodoLista* siguiente; };
+struct NodoCola  { Alumno info; NodoCola* siguiente; };
+struct NodoPila  { string accion; NodoPila* siguiente; };
 
-float calcularPromedio(float c1, float ep, float c2, float ef) {   //esta es el calculo que se usara para sacar el promedio del alumno 
+float calcularPromedio(float c1, float ep, float c2, float ef) {
     return (c1 * 0.20) + (ep * 0.25) + (c2 * 0.20) + (ef * 0.35);
 }
 
-void registrarAlumno(NodoLista*& lista, int id, string nom, float n1, float n2, float n3, float n4) { //aqui creamos pero creamos alumno nuevo  y lo agrega al inicio de la lista 
-  
-    NodoLista* nuevo = new NodoLista(); //Crea un nuevo ladrillo (nodo) vacio en la memoria.
-    nuevo->info.id = id; //Llena todos los campos del alumno dentro del nuevo 
+void registrarAlumno(NodoLista*& lista, int id, string nom, float n1, float n2, float n3, float n4) {
+    NodoLista* nuevo = new NodoLista();
+    nuevo->info.id = id;
     nuevo->info.nombre = nom;
     nuevo->info.c1 = n1;
     nuevo->info.ep = n2;
@@ -43,10 +36,9 @@ void registrarAlumno(NodoLista*& lista, int id, string nom, float n1, float n2, 
 }
 
 void mostrarRegistro(NodoLista* lista) {
-    
-    if (lista == NULL) { cout << "Registro vacio.\n"; return; } //Si la lista esta vacia (no hay ningun alumno), muestra un mensaje
-    NodoLista* temp = lista;        // Crea un puntero auxiliar "temp" que empieza apuntando al primer alumno. Usamos "temp" para no perder la referencia original "lista".
-    cout << "\nID\tNombre\tC1\tEP\tC2\tEF\tProm\tEstado\n"; // es el encabezado
+    if (lista == NULL) { cout << "Registro vacio.\n"; return; }
+    NodoLista* temp = lista;
+    cout << "\nID\tNombre\tC1\tEP\tC2\tEF\tProm\tEstado\n";
     while (temp != NULL) {
         cout << temp->info.id << "\t" << temp->info.nombre << "\t" << temp->info.c1 << "\t"
              << temp->info.ep << "\t" << temp->info.c2 << "\t" << temp->info.ef << "\t"
@@ -55,8 +47,7 @@ void mostrarRegistro(NodoLista* lista) {
     }
 }
 
-void ordenarPorPromedio(NodoLista*& lista) { //Muestra en pantalla TODOS los alumnos registrados con todos sus datos
-   
+void ordenarPorPromedio(NodoLista*& lista) {
     if (lista == NULL) return;
     for (NodoLista* i = lista; i != NULL; i = i->siguiente) {
         for (NodoLista* j = i->siguiente; j != NULL; j = j->siguiente) {
@@ -133,6 +124,7 @@ void atenderReclamo(NodoCola*& frente, NodoCola*& final) {
     delete aux;
     if (frente == NULL) final = NULL;
 }
+
 void registrarCambio(NodoPila*& cima, string msg) {
     NodoPila* nuevo = new NodoPila();
     nuevo->accion = msg;
@@ -187,8 +179,81 @@ int main() {
     int op, id, sub;
     string nom;
     float n1, n2, n3, n4;
-    
 
+    do {
+        cout << "\n===========================================" << endl;
+        cout << "  SISTEMA DE GESTION ACADEMICA (U.C.)     " << endl;
+        cout << "===========================================" << endl;
+        cout << " 1. Registrar Alumno\n 2. Ver Registro\n 3. Ordenar por Promedio\n 4. Buscar Alumno" << endl;
+        cout << " 5. Encolar Reclamo por ID\n 6. Atender Reclamo\n 7. Historial (Ver/Desapilar)" << endl;
+        cout << " 8. Guardar Datos\n 9. Cargar Datos\n10. Modificar Notas\n11. Eliminar Alumno\n12. Salir" << endl;
+        cout << " Seleccione: ";
+        cin >> op;
+
+        switch (op) {
+            case 1:
+                cout << "ID: "; cin >> id;
+                cout << "Nombre: "; cin.ignore(); getline(cin, nom);
+                cout << "Notas (C1 EP C2 EF): "; cin >> n1 >> n2 >> n3 >> n4;
+                registrarAlumno(registro, id, nom, n1, n2, n3, n4);
+                registrarCambio(historial, "Registro de alumno");
+                break;
+            case 2:
+                mostrarRegistro(registro);
+                break;
+            case 3:
+                ordenarPorPromedio(registro);
+                break;
+            case 4:
+                cout << "ID a buscar: "; cin >> id;
+                buscarAlumno(registro, id);
+                break;
+            case 5: {
+                cout << "ID a encolar: "; cin >> id;
+                NodoLista* t = registro;
+                bool ok = false;
+                while (t != NULL) {
+                    if (t->info.id == id) {
+                        encolarReclamo(frenteR, finalR, t->info);
+                        ok = true;
+                        break;
+                    }
+                    t = t->siguiente;
+                }
+                if (!ok) cout << "Alumno no encontrado.\n";
+                break;
+            }
+            case 6:
+                atenderReclamo(frenteR, finalR);
+                break;
+            case 7:
+                cout << "1. Ver ultimo  2. Desapilar: "; cin >> sub;
+                if (sub == 1) verUltimoCambio(historial);
+                else if (sub == 2) desapilarCambio(historial);
+                else cout << "Opcion no valida.\n";
+                break;
+            case 8:
+                guardarDatos(registro);
+                break;
+            case 9:
+                cargarDatos(registro);
+                break;
+            case 10:
+                cout << "ID a modificar: "; cin >> id;
+                modificarNotas(registro, id);
+                registrarCambio(historial, "Modificacion de notas");
+                break;
+            case 11:
+                cout << "ID a eliminar: "; cin >> id;
+                eliminarAlumno(registro, id);
+                break;
+            case 12:
+                cout << "Saliendo...\n";
+                break;
+            default:
+                cout << "Opcion no valida.\n";
+        }
+    } while (op != 12);
 
     return 0;
 }
