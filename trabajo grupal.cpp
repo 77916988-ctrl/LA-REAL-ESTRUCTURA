@@ -21,6 +21,60 @@ float calcularPromedio(float c1, float ep, float c2, float ef) {
     return (c1 * 0.20) + (ep * 0.25) + (c2 * 0.20) + (ef * 0.35);
 }
 
+bool existeID(NodoLista* lista, int id) {
+    while (lista != NULL) {
+        if (lista->info.id == id)
+            return true;
+        lista = lista->siguiente;
+    }
+    return false;
+}
+
+void validarID(NodoLista* lista, int& id) {
+    while (true) {
+        cout << "ID: ";
+
+        if (!(cin >> id)) {
+            cout << "Error... Debe ingresar un numero.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
+
+        if (existeID(lista, id)) {
+            cout << "Error... El ID ya existe.\n";
+            continue;
+        }
+
+        break;
+    }
+}
+
+void validarNotas(float& n1, float& n2, float& n3, float& n4) {
+    while (true) {
+
+        cout << "Notas (C1 EP C2 EF): ";
+
+        if (!(cin >> n1 >> n2 >> n3 >> n4)) {
+            cout << "Error: Solo se permiten numeros.\n";
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
+
+        if (n1 < 0 || n1 > 20 ||
+            n2 < 0 || n2 > 20 ||
+            n3 < 0 || n3 > 20 ||
+            n4 < 0 || n4 > 20) {
+
+            cout << "Error: Las notas deben estar entre 0 y 20.\n";
+            continue;
+        }
+
+        break;
+    }
+}
+
 void registrarAlumno(NodoLista*& lista, int id, string nom, float n1, float n2, float n3, float n4) {
     NodoLista* nuevo = new NodoLista();
     nuevo->info.id = id;
@@ -77,11 +131,19 @@ void modificarNotas(NodoLista* lista, int id) {
     NodoLista* temp = lista;
     while (temp != NULL) {
         if (temp->info.id == id) {
-            cout << "Nuevas notas (C1 EP C2 EF): ";
-            cin >> temp->info.c1 >> temp->info.ep >> temp->info.c2 >> temp->info.ef;
-            temp->info.promedio = calcularPromedio(temp->info.c1, temp->info.ep, temp->info.c2, temp->info.ef);
-            temp->info.estado = (temp->info.promedio >= 11) ? "Aprobado" : "Desaprobado";
-            cout << "Notas actualizadas. Promedio: " << temp->info.promedio << endl;
+            float n1, n2, n3, n4;
+            validarNotas(n1, n2, n3, n4);
+            temp->info.c1 = n1;
+            temp->info.ep = n2;
+            temp->info.c2 = n3;
+            temp->info.ef = n4;
+            temp->info.promedio =
+                calcularPromedio(n1, n2, n3, n4);
+            temp->info.estado =
+                (temp->info.promedio >= 11)
+                ? "Aprobado"
+                : "Desaprobado";
+            cout << "Notas actualizadas.\n";
             return;
         }
         temp = temp->siguiente;
@@ -192,12 +254,15 @@ int main() {
 
         switch (op) {
             case 1:
-                cout << "ID: "; cin >> id;
-                cout << "Nombre: "; cin.ignore(); getline(cin, nom);
-                cout << "Notas (C1 EP C2 EF): "; cin >> n1 >> n2 >> n3 >> n4;
-                registrarAlumno(registro, id, nom, n1, n2, n3, n4);
-                registrarCambio(historial, "Registro de alumno");
-                break;
+			    validarID(registro, id);
+			    cout << "Nombre: ";
+			    cin.ignore();
+			    getline(cin, nom);
+			    validarNotas(n1, n2, n3, n4);
+			    registrarAlumno(registro, id, nom, n1, n2, n3, n4);
+			    registrarCambio(historial, "Registro de alumno");
+			
+			    break;
             case 2:
                 mostrarRegistro(registro);
                 break;
